@@ -42,108 +42,99 @@
     {/if}
 </section>
 
-import bcast from "@windy/broadcast";
-import { onDestroy, onMount } from 'svelte';
-import { map } from "@windy/map";
+<script lang="ts">
+    import bcast from "@windy/broadcast";
+    import { onDestroy, onMount } from 'svelte';
+    import { map } from "@windy/map";
 
-const title = 'GPS Position Plugin';
+    let title = 'GPS Position Plugin';
+    let gpsData = '';
+    let latitude = '';
+    let longitude = '';
+    let sog = '';
+    let cog = '';
+    let dev = '';
+    let dir = '';
+    let error = '';
+    let markerLayer;
 
-let gpsData = "";
-let latitude = "";
-let longitude = "";
-let error = "";
-
-let markerLayer: L.LayerGroup;
-
-async function fetchGPSData() {
-    try {
-        const response = await fetch("http://localhost:5000");
-        const data = await response.text();
-        parseGPSData(data);
-    } catch (err) {
-        error = `Erreur lors de la récupération des données : ${err.message || err}`;
-        console.error('Erreur de récupération des données:', err);
+    async function fetchGPSData() {
+        try {
+            const response = await fetch("http://localhost:5000");
+            const data = await response.text();
+            parseGPSData(data);
+        } catch (err) {
+            error = `Erreur lors de la récupération des données : ${err.message || err}`;
+            console.error('Erreur de récupération des données:', err);
+        }
     }
-}
 
-function parseGPSData(data: string) {
-    gpsData = data;
+    function parseGPSData(data: string) {
+        gpsData = data;
 
-    const regex = /\$GPGLL,(\d{4}\.\d+),([NS]),(\d{5}\.\d+),([EW]),(\d{6}\.\d+),([AV])\*/;
-    const match = regex.exec(data);
+        const regex = /\$GPGLL,(\d{4}\.\d+),([NS]),(\d{5}\.\d+),([EW]),(\d{6}\.\d+),([AV])\*/;
+        const match = regex.exec(data);
 
-    if (match) {
-        const latDeg = parseFloat(match[1].slice(0, 2));
-        const latMin = parseFloat(match[1].slice(2));
-        const latHem = match[2];
+        if (match) {
+            const latDeg = parseFloat(match[1].slice(0, 2));
+            const latMin = parseFloat(match[1].slice(2));
+            const latHem = match[2];
 
-        const lonDeg = parseFloat(match[3].slice(0, 3));
-        const lonMin = parseFloat(match[3].slice(3));
-        const lonHem = match[4];
+            const lonDeg = parseFloat(match[3].slice(0, 3));
+            const lonMin = parseFloat(match[3].slice(3));
+            const lonHem = match[4];
 
-        const validity = match[6];
+            latitude = ((latDeg + latMin / 60) * (latHem === 'S' ? -1 : 1)).toFixed(6);
+            longitude = ((lonDeg + lonMin / 60) * (lonHem === 'W' ? -1 : 1)).toFixed(6);
 
-        latitude = ((latDeg + latMin / 60) * (latHem === 'S' ? -1 : 1)).toFixed(6);
-        longitude = ((lonDeg + lonMin / 60) * (lonHem === 'W' ? -1 : 1)).toFixed(6);
-
-        if (latitude && longitude && validity === 'A') {
-            error = ""; // Clear any previous errors
-            addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
+            if (latitude && longitude && match[6] === 'A') {
+                addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
+            } else {
+                error = "Données GPS invalides.";
+            }
         } else {
-            error = "Données GPS invalides.";
+            error = "Trame GPS non valide.";
         }
-    } else {
-        error = "Trame GPS non valide.";
     }
-}
 
-function addMarkerOnMap(lat: number, lon: number) {
-    if (map) {
-        if (!markerLayer) {
-            markerLayer = L.layerGroup().addTo(map);
+    function addMarkerOnMap(lat: number, lon: number) {
+        if (map) {
+            if (!markerLayer) {
+                markerLayer = L.layerGroup().addTo(map);
+            }
+            markerLayer.clearLayers();
+
+            const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="font-size: 24px; animation: spin 2s linear infinite; color: black;">
+                          <i class="fa-solid fa-location-crosshairs"></i>
+                       </div>`,
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+            });
+
+            L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
+        } else {
+            console.error("Carte Windy non disponible !");
         }
-
-        markerLayer.clearLayers();
-
-        const customIcon = L.divIcon({
-            className: 'custom-marker',
-            html: `
-                <div style="display: flex; align-items: center; flex-direction: column;">
-                    <div style="font-size: 24px; animation: spin 2s linear infinite; color: black;">
-                        <i class="fa-solid fa-location-crosshairs"></i>
-                    </div>
-                </div>
-            `,
-            iconSize: [30, 42],
-            iconAnchor: [15, 42],
-        });
-
-        L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-    } else {
-        console.error("Carte Windy non disponible !");
     }
-}
 
-function cleanup() {
-    if (markerLayer) {
-        markerLayer.clearLayers();
-        map.removeLayer(markerLayer);
-        markerLayer = null;
+    function cleanup() {
+        if (markerLayer) {
+            markerLayer.clearLayers();
+        }
     }
-}
 
-export const onopen = (_params: unknown) => {
-    // Handler si nécessaire lors de l'ouverture du plugin
-};
+    export const onopen = (_params: unknown) => {};
 
-onMount(() => {
-    window.addEventListener('beforeunload', cleanup);
-});
+    onMount(() => {
+        window.addEventListener('beforeunload', cleanup);
+    });
 
-onDestroy(() => {
-    cleanup();
-    window.removeEventListener('beforeunload', cleanup);
-});
+    onDestroy(() => {
+        cleanup();
+        window.removeEventListener('beforeunload', cleanup);
+    });
 </script>
 
 <style lang="less">
