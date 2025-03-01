@@ -1,7 +1,7 @@
 import type { ExternalPluginConfig } from '@windy/interfaces';
 
 const config: ExternalPluginConfig = {
-    name: 'windy-plugin-gpsfromcomTCP',
+    name: 'windy-plugin-gpsfromTCP',
     version: '0.0.01',
     icon: '🛰️',
     title: 'GPS from COM',
