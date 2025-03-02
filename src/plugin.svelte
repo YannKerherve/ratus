@@ -30,98 +30,41 @@
 </section>
 
 <script lang="ts">
-    import bcast from "@windy/broadcast";
     import { onDestroy, onMount } from 'svelte';
-    import { map } from "@windy/map";
 
-    let title = 'GPS Position Plugin';
-    let gpsData = '';
-    let latitude = '';
-    let longitude = '';
-    let sog = '';
-    let cog = '';
-    let dev = '';
-    let dir = '';
+    let gpsData = 'Aucune donnée reçue pour le moment...';
     let error = '';
-    let markerLayer;
 
+    // Fonction pour récupérer les données de l'API locale
     async function fetchGPSData() {
         try {
             const response = await fetch("http://localhost:5000");
-            const data = await response.text();
-            parseGPSData(data);
+            gpsData = await response.text();
         } catch (err) {
             error = `Erreur lors de la récupération des données : ${err.message || err}`;
             console.error('Erreur de récupération des données:', err);
         }
     }
 
-    function parseGPSData(data: string) {
-        gpsData = data;
-
-        const regex = /\$GPGLL,(\d{4}\.\d+),([NS]),(\d{5}\.\d+),([EW]),(\d{6}\.\d+),([AV])\*/;
-        const match = regex.exec(data);
-
-        if (match) {
-            const latDeg = parseFloat(match[1].slice(0, 2));
-            const latMin = parseFloat(match[1].slice(2));
-            const latHem = match[2];
-
-            const lonDeg = parseFloat(match[3].slice(0, 3));
-            const lonMin = parseFloat(match[3].slice(3));
-            const lonHem = match[4];
-
-            latitude = ((latDeg + latMin / 60) * (latHem === 'S' ? -1 : 1)).toFixed(6);
-            longitude = ((lonDeg + lonMin / 60) * (lonHem === 'W' ? -1 : 1)).toFixed(6);
-
-            if (latitude && longitude && match[6] === 'A') {
-                addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
-            } else {
-                error = "Données GPS invalides.";
-            }
-        } else {
-            error = "Trame GPS non valide.";
-        }
-    }
-
-    function addMarkerOnMap(lat: number, lon: number) {
-        if (map) {
-            if (!markerLayer) {
-                markerLayer = L.layerGroup().addTo(map);
-            }
-            markerLayer.clearLayers();
-
-            const customIcon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div style="font-size: 24px; animation: spin 2s linear infinite; color: black;">
-                          <i class="fa-solid fa-location-crosshairs"></i>
-                       </div>`,
-                iconSize: [30, 42],
-                iconAnchor: [15, 42],
-            });
-
-            L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-        } else {
-            console.error("Carte Windy non disponible !");
-        }
-    }
-
-    function cleanup() {
-        if (markerLayer) {
-            markerLayer.clearLayers();
-        }
-    }
-
-    export const onopen = (_params: unknown) => {};
-
+    // Rafraîchissement périodique
+    let interval;
     onMount(() => {
-        window.addEventListener('beforeunload', cleanup);
+        interval = setInterval(fetchGPSData, 2000); // toutes les 2 secondes
+        fetchGPSData(); // première récupération immédiate
     });
 
     onDestroy(() => {
-        cleanup();
-        window.removeEventListener('beforeunload', cleanup);
+        clearInterval(interval);
     });
+
+    export const onopen = () => {
+        console.log('Plugin ouvert');
+        fetchGPSData();
+    };
+
+    export const onclose = () => {
+        console.log('Plugin fermé');
+    };
 </script>
 
 <style lang="less">
@@ -136,4 +79,19 @@
         color: red;
         margin-top: 20px;
     }
+    .plugin-container {
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        white-space: pre-wrap; /* Permet d'afficher les retours à la ligne */
+        background: #f5f5f5;
+        height: 100%;
+        overflow-y: auto;
+    }
 </style>
+<div class="plugin-container">
+    <h3>GPS Data Stream</h3>
+    {#if error}
+        <div class="error">{error}</div>
+    {/if}
+    <pre>{gpsData}</pre>
+</div>
