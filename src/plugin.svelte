@@ -13,17 +13,7 @@
 <p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a></p>
 <p> <center>🛳️</center></p>
 
-<p> Frame: $GNRMC ;
-<label for="baudrate">Baud Rate:</label>
-<select name="baurate" id="baudrate">
-  <option value="115200">115200</option>
-  <option value="74880">74880</option>
-  <option value="57600">57600</option>
-  <option value="38400">38400</option>
-  <option value="19200">19200</option>
-  <option value="9600">9600</option>
-  <option value="4800">4800</option>
-</select>    </p>
+<p> Frame: $GNRMC ;</p>
 <div class="button" on:click={connectSerial}>Connect to GPS</div>
 <div class="button" on:click={deco}>Disconnect</div>
     {#if gpsData}
@@ -31,9 +21,6 @@
            <p> {gpsData}</p>
            <p>  Latitude: {latitude}° </p>
            <p>  Longitude: {longitude}° </p>
-           <p>  Sog: {cog} knt</p>
-          <p>  Cog: {sog}°</p>
-          <p>  Mag. Deviation: {dev}° {dir}</p>
     {/if}
     {#if error}
         <div class="error">
