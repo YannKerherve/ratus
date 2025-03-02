@@ -11,11 +11,10 @@
     </div>
 <p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a></p>
 <p> <center>🛳️🛳️</center></p>
-<p> 1. Dowload and unzip the add-on file</p>
+<p> 1. Dowload and unzip the <a href="https://a-venir.fr">add-on file</a></p>
 <p> 2. Execute server.exe and fill in informations of TCP connexion</p>
 <p> 3. Press start on the server and update windy</p>
 
-<div class="button" on:click={window.location.href = 'https://a-venir.fr'}>Dowload add-on</div>
     {#if gpsData}
            <p> GPS Data:</p>
            <p> {gpsData}</p>
