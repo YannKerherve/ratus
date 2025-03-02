@@ -1,7 +1,6 @@
 <div class="plugin__mobile-header">
     { title }
 </div>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <section class="plugin__content">
     <div
@@ -11,11 +10,12 @@
     { title }
     </div>
 <p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a></p>
-<p> <center>🛳️</center></p>
+<p> <center>🛳️🛳️</center></p>
+<p> 1. Dowload and unzip the add-on file</p>
+<p> 2. Execute server.exe and fill in informations of TCP connexion</p>
+<p> 3. Press start on the server and update windy</p>
 
-<p> Frame: $GNRMC ;</p>
-<div class="button" on:click={connectSerial}>Connect to GPS</div>
-<div class="button" on:click={deco}>Disconnect</div>
+<div class="button" on:click={window.location.href = 'https://a-venir.fr'}>Dowload add-on</div>
     {#if gpsData}
            <p> GPS Data:</p>
            <p> {gpsData}</p>
@@ -31,20 +31,72 @@
 
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
-
+    import { map } from "@windy/map";
+    const title ='TCP GPS position plugin'
+    let latitude: string | null=null;
+    let longitude: string | null=null;
+    let markerLayer = L.layerGroup().addTo(map);
     let gpsData = 'Aucune donnée reçue pour le moment...';
     let error = '';
 
     // Fonction pour récupérer les données de l'API locale
     async function fetchGPSData() {
         try {
-            const response = await fetch("http://localhost:5000");
+            const response = await fetch("http://localhost:5000/gps-data");
             gpsData = await response.text();
+            if (gpsData.startsWith('$GPGLL')){
+                const parts = gpsData.split(',');
+                const latitudesal = parseFloat(parts[1]);
+                const latDirection = parts[2];
+                const longitudesal = parseFloat(parts[3]);
+                const lonDirection = parts[4];
+                if (latDirection=='N'){
+                   latitude=Math.round(latitudesal/100)+(latitudesal-Math.round(latitudesal/100)*100)/60
+                   }
+                if (latDirection=='S'){
+                   latitude=-Math.round(latitudesal/100)+(latitudesal-Math.round(latitudesal/100)*100)/60
+                   }
+                if (lonDirection=='W'){
+                   longitude=-Math.round(longitudesal/100)+(longitudesal-Math.round(longitudesal/100)*100)/60
+                   }
+                if (lonDirection=='N'){
+                   longitude=Math.round(longitudesal/100)+(longitudesal-Math.round(longitudesal/100)*100)/60
+                   }
+                   
+                if (latitude && longitude) {
+                   addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
+                   }
+            }
         } catch (err) {
             error = `Erreur lors de la récupération des données : ${err.message || err}`;
             console.error('Erreur de récupération des données:', err);
         }
     }
+    function addMarkerOnMap(lat, lon) {
+    if (map) {
+markerLayer.clearLayers();
+        // Crée le marqueur avec la popup contenant une icône qui tourne
+
+                const customIcon = L.divIcon({
+            className: 'custom-marker', // Classe CSS pour styliser
+            html: `
+                <div style="display: flex; align-items: center; flex-direction: column;">
+                    <div style="font-size: 24px; animation: spin 2s linear infinite; color: black;">
+                        <i class="fa-solid fa-location-crosshairs"></i>
+                    </div>
+                    </div>
+            `,
+            iconSize: [30, 42], // Taille approximative
+            iconAnchor: [15, 42], // Ancre pour alignement (base du marqueur)
+        });
+
+        // Ajoute le marqueur à la carte
+        //const marker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
+        const marker = L.marker([lat, lon]).addTo(markerLayer);   
+} else {
+        console.error("Carte Windy non disponible !");
+    }
+}
 
     // Rafraîchissement périodique
     let interval;
