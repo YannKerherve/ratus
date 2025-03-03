@@ -56,10 +56,10 @@
                    latitude=-Math.round(latitudesal/100)+(latitudesal-Math.round(latitudesal/100)*100)/60
                    }
                 if (lonDirection=='W'){
-                   longitude=-Math.round(longitudesal/100)+(longitudesal-Math.round(longitudesal/100)*100)/60
+                   longitude=-Math.round(longitudesal/1000)+(longitudesal-Math.round(longitudesal/1000)*1000)/60
                    }
-                if (lonDirection=='N'){
-                   longitude=Math.round(longitudesal/100)+(longitudesal-Math.round(longitudesal/100)*100)/60
+                if (lonDirection=='E'){
+                   longitude=Math.round(longitudesal/1000)+(longitudesal-Math.round(longitudesal/1000)*1000)/60
                    }
                    
                 if (latitude && longitude) {
