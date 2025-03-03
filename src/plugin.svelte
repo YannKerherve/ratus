@@ -49,6 +49,8 @@
                 const latDirection = parts[2];
                 const longitudesal = parseFloat(parts[3]);
                 const lonDirection = parts[4];
+                latitude = convertLatitude(latitudesal, latDirection);
+                longitude = convertLongitude(longitudesal, lonDirection);
                 function convertLatitude(latitudesal, latDirection) {
                     const degrees = Math.floor(latitudesal / 100);
                     const minutes = latitudesal - (degrees * 100);
@@ -71,8 +73,8 @@
                     return longitude;
                 }
 
-                let latitude = convertLatitude(latitudesal, latDirection);
-                let longitude = convertLongitude(longitudesal, lonDirection);
+
+
                    
                 if (latitude && longitude) {
                    addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
