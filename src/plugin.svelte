@@ -63,8 +63,8 @@
                 }
 
                 function convertLongitude(longitudesal, lonDirection) {
-                    const degrees = Math.floor(longitudesal / 1000);
-                    const minutes = longitudesal - (degrees * 1000);
+                    const degrees = Math.floor(longitudesal / 100);
+                    const minutes = longitudesal - (degrees * 100);
                     let longitude = degrees + (minutes / 60);
 
                     if (lonDirection === 'W') {
