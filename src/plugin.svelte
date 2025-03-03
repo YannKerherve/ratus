@@ -10,11 +10,11 @@
     { title }
     </div>
 <p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a></p>
-<p> <center>🛳️🛳️</center></p>
-<p> 1. Dowload and unzip the <a href="https://a-venir.fr">add-on file</a></p>
-<p> 2. Execute server.exe and fill in informations of TCP connexion</p>
-<p> 3. Press start on the server and update windy</p>
-
+<p> <center>🛳️</center></p>
+<p> 1. Download and unzip the <a href="https://drive.google.com/file/d/1WQprHSiy15N97M6U9ybNfuVbMuzLSsL2/view?usp=sharing">plugin file</a> (click on ‘plugin file')</p>
+<p> 2. Run server.exe and fill in the information from TCP</p>
+<p> 3. Press start on the server and update Windy</p>
+<p> <center>🛳️</center></p>
     {#if gpsData}
            <p> GPS Data:</p>
            <p> {gpsData}</p>
@@ -87,7 +87,7 @@
     }
     function addMarkerOnMap(lat, lon) {
     if (map) {
-//markerLayer.clearLayers(); //(enlever le // pour avoir un seul point)
+markerLayer.clearLayers(); 
         // Crée le marqueur avec la popup contenant une icône qui tourne
 
                 const customIcon = L.divIcon({
