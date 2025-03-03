@@ -100,7 +100,7 @@
     // Rafraîchissement périodique
     let interval;
     onMount(() => {
-        interval = setInterval(fetchGPSData, 2000); // toutes les 2 secondes
+        interval = setInterval(fetchGPSData, 500); // toutes les 2 secondes
         fetchGPSData(); // première récupération immédiate
     });
 
