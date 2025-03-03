@@ -73,7 +73,7 @@
     }
     function addMarkerOnMap(lat, lon) {
     if (map) {
-markerLayer.clearLayers();
+//markerLayer.clearLayers(); //(enlever le // pour avoir un seul point)
         // Crée le marqueur avec la popup contenant une icône qui tourne
 
                 const customIcon = L.divIcon({
