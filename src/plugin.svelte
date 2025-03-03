@@ -49,18 +49,30 @@
                 const latDirection = parts[2];
                 const longitudesal = parseFloat(parts[3]);
                 const lonDirection = parts[4];
-                if (latDirection=='N'){
-                   latitude=Math.round(latitudesal/100)+(latitudesal-Math.round(latitudesal/100)*100)/60
-                   }
-                if (latDirection=='S'){
-                   latitude=-Math.round(latitudesal/100)+(latitudesal-Math.round(latitudesal/100)*100)/60
-                   }
-                if (lonDirection=='W'){
-                   longitude=-Math.round(longitudesal/1000)+(longitudesal-Math.round(longitudesal/1000)*1000)/60
-                   }
-                if (lonDirection=='E'){
-                   longitude=Math.round(longitudesal/1000)+(longitudesal-Math.round(longitudesal/1000)*1000)/60
-                   }
+                function convertLatitude(latitudesal, latDirection) {
+                    const degrees = Math.floor(latitudesal / 100);
+                    const minutes = latitudesal - (degrees * 100);
+                    let latitude = degrees + (minutes / 60);
+
+                    if (latDirection === 'S') {
+                        latitude = -latitude;
+                    }
+                    return latitude;
+                }
+
+                function convertLongitude(longitudesal, lonDirection) {
+                    const degrees = Math.floor(longitudesal / 1000);
+                    const minutes = longitudesal - (degrees * 1000);
+                    let longitude = degrees + (minutes / 60);
+
+                    if (lonDirection === 'W') {
+                        longitude = -longitude;
+                    }
+                    return longitude;
+                }
+
+                let latitude = convertLatitude(latitudesal, latDirection);
+                let longitude = convertLongitude(longitudesal, lonDirection);
                    
                 if (latitude && longitude) {
                    addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
