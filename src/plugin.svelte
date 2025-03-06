@@ -88,29 +88,19 @@
     }
     function addMarkerOnMap(lat, lon) {
     if (map) {
-markerLayer.clearLayers(); 
-        // Crée le marqueur avec la popup contenant une icône qui tourne
+        markerLayer.clearLayers(); 
 
-                const customIcon = L.divIcon({
-            className: 'custom-marker', // Classe CSS pour styliser
-            html: `
-                <div style="display: flex; align-items: center; flex-direction: column;">
-                    <div style="font-size: 24px; animation: spin 2s linear infinite; color: black;">
-                        <i class="fa-solid fa-location-crosshairs"></i>
-                    </div>
-                    </div>
-            `,
-            iconSize: [30, 42], // Taille approximative
-            iconAnchor: [15, 42], // Ancre pour alignement (base du marqueur)
+        const customIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lcc.png', // URL de ton icône
+            iconSize: [30, 30],       // Taille de l'icône
+            iconAnchor: [15, 30],     // Point d'ancrage au centre (ajuste selon l'image)
         });
 
-        // Ajoute le marqueur à la carte
-        //const marker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
-        const marker = L.marker([lat, lon]).addTo(markerLayer);   
-} else {
+        const marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
+    } else {
         console.error("Carte Windy non disponible !");
     }
-}
+
 
     // Rafraîchissement périodique
     let interval;
