@@ -92,8 +92,8 @@
 
         const customIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lcc.png', // URL de ton icône
-            iconSize: [30, 30],       // Taille de l'icône
-            iconAnchor: [15, 30],     // Point d'ancrage au centre (ajuste selon l'image)
+            iconSize: [100, 100],       // Taille de l'icône
+            iconAnchor: [50, 100],     // Point d'ancrage au centre (ajuste selon l'image)
         });
 
         const marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
