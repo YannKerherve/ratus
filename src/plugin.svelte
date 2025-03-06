@@ -101,7 +101,7 @@
         console.error("Carte Windy non disponible !");
     }
 
-
+}
     // Rafraîchissement périodique
     let interval;
     onMount(() => {
