@@ -29,6 +29,7 @@
 </section>
 
 <script lang="ts">
+    import bcast from "@windy/broadcast";
     import { onDestroy, onMount } from 'svelte';
     import { map } from "@windy/map";
     const title ='TCP GPS position plugin'
