@@ -118,8 +118,9 @@ function addMarkerOnMap(lat, lon, heading) {
             let translatePart = match ? match[0] : "translate3d(0px, 0px, 0px)";
 
             // Appliquer la rotation tout en conservant la position
-            iconElement.style.transform = `${translatePart} rotate(${heading}deg)`;
+            iconElement.style.transform = ${translatePart},' rotate(',${heading},'deg)`;
             iconElement.style.transformOrigin = "50% 50%"; 
+            console.log("New transform:", `${translatePart} rotate(${heading}deg)`);
         }
     }, 50); // Petit délai pour s'assurer que Leaflet a mis à jour la position
 
