@@ -90,35 +90,41 @@ function convertLongitude(longitudesal, lonDirection) {
 
 function addMarkerOnMap(lat, lon, heading) {
     if (map) {
-        markerLayer.clearLayers();
-
+        markerLayer.clearLayers(); // Supprime l'ancien marqueur
+        
         const customIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
             iconSize: [25, 100],
             iconAnchor: [12, 50],
         });
 
+        // Ajoute le marqueur
         let marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
 
-        // Attends que l'icône soit ajoutée au DOM
-        marker.on('add', function () {
-            const icon = marker.getElement();
-            if (icon) {
-                icon.style.transformOrigin = "50% 50%";
-                icon.style.transform = `rotate(${heading}deg)`;
+        // Attends que l'élément DOM du marqueur soit créé
+        setTimeout(() => {
+            const iconElement = marker.getElement();
+            if (iconElement) {
+                iconElement.style.transformOrigin = "50% 50%";
+                iconElement.style.transform = `rotate(${heading}deg)`;
+            } else {
+                console.error("Impossible d'appliquer la rotation : élément introuvable");
             }
-        });
+        }, 100); // Petite pause pour laisser Leaflet charger l'icône
 
+        // Ajoute un point à la trace si ce n'est pas le premier point
         if (previousLat !== null && previousLon !== null) {
             polyline.addLatLng([lat, lon]);
         }
 
+        // Mise à jour des positions précédentes
         previousLat = lat;
         previousLon = lon;
     } else {
         console.error("Carte Windy non disponible !");
     }
 }
+
 
 
 let interval;
