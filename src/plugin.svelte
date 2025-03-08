@@ -90,35 +90,34 @@ function convertLongitude(longitudesal, lonDirection) {
 
 function addMarkerOnMap(lat, lon, heading) {
     if (map) {
-        // Si un marqueur existe déjà, mettez à jour sa position et rotation
-        if (markerLayer.getLayers().length > 0) {
-            const marker = markerLayer.getLayers()[0];
-            marker.setLatLng([lat, lon]); // Mettre à jour la position
-            const iconElement = marker.getElement();
-            if (iconElement) {
-                iconElement.style.transformOrigin = "50% 50%";
-                iconElement.style.transform = `rotate(${heading}deg)`; // Appliquer la rotation
-            }
+        // Créer une icône personnalisée
+        const customIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
+            iconSize: [25, 100],  
+            iconAnchor: [12, 50], 
+        });
+
+        // Vérifier si le marqueur existe déjà
+        if (!marker) {
+            marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
         } else {
-            // Si aucun marqueur n'existe, en créer un nouveau
-            const customIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
-                iconSize: [25, 100],
-                iconAnchor: [12, 50],
-            });
-
-            let marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-
-            // Rotation au moment de l'ajout du marqueur
-            marker.on('add', () => {
-                const iconElement = marker.getElement();
-                if (iconElement) {
-                    iconElement.style.transformOrigin = "50% 50%";
-                    iconElement.style.transform = `rotate(${heading}deg)`; // Appliquer la rotation
-                }
-            });
+            marker.setLatLng([lat, lon]);
         }
 
+        // Sélectionner l'élément DOM du marqueur
+        const iconElement = marker.getElement();
+        if (iconElement) {
+            // Récupérer la transformation actuelle (Leaflet la met à jour automatiquement)
+            let currentTransform = iconElement.style.transform;
+
+            // Extraire la partie translate3d (position) en ignorant toute rotation existante
+            let match = currentTransform.match(/translate3d\([^)]+\)/);
+            let translatePart = match ? match[0] : "translate3d(0px, 0px, 0px)"; 
+
+            // Appliquer la nouvelle transformation avec la rotation
+            iconElement.style.transform = `${translatePart} rotate(${heading}deg)`;
+            iconElement.style.transformOrigin = "50% 50%"; 
+        }
         // Mise à jour de la trace
         if (previousLat !== null && previousLon !== null) {
             polyline.addLatLng([lat, lon]);
@@ -131,6 +130,7 @@ function addMarkerOnMap(lat, lon, heading) {
         console.error("Carte Windy non disponible !");
     }
 }
+
 
 
 
