@@ -91,10 +91,10 @@ function addMarkerOnMap(lat, lon,heading) {
         markerLayer.clearLayers(); 
         const customIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
-            iconSize: [50, 100],
-            iconAnchor: [25, 50],
+            iconSize: [25, 100],
+            iconAnchor: [12, 50],
             rotationAngle: heading, // Rotation initiale
-            rotationOrigin: [25, 50],
+            rotationOrigin: [12, 50],
         });
         
         L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
