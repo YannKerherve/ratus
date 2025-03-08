@@ -1,3 +1,34 @@
+<div class="plugin__mobile-header">
+    { title }
+</div>
+
+<section class="plugin__content">
+    <div
+        class="plugin__title plugin__title--chevron-back"
+        on:click={ () => bcast.emit('rqstOpen', 'menu') }
+    >
+    { title }
+    </div>
+<p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a></p>
+<p> <center>🛳️</center></p>
+<p> 1. Download and unzip the <a href="https://drive.google.com/file/d/1WQprHSiy15N97M6U9ybNfuVbMuzLSsL2/view?usp=sharing">plugin file</a> (click on ‘plugin file')</p>
+<p> 2. Run server.exe and fill in the information from TCP</p>
+<p> 3. Press start on the server and update Windy</p>
+<p> <center>🛳️</center></p>
+    {#if gpsData}
+           <p> GPS Data:</p>
+           <p> {gpsData}</p>
+           <p>  Latitude: {latitude}° </p>
+           <p>  Longitude: {longitude}° </p>
+    {/if}
+    {#if error}
+        <div class="error">
+            <p>Error: {error}</p>
+        </div>
+    {/if}
+</section>
+
+<script lang="ts">
 import bcast from "@windy/broadcast";
 import { onDestroy, onMount } from 'svelte';
 import { map } from "@windy/map";
@@ -8,7 +39,7 @@ let longitude = null;
 let markerLayer = L.layerGroup().addTo(map);
 let gpsData = 'Aucune donnée reçue pour le moment...';
 let error = '';
-let polyline = L.polyline([], { color: 'red' }).addTo(map); // Ligne pour l'historique des positions
+let polyline;
 let previousLat = null, previousLon = null;
 
 async function fetchGPSData() {
@@ -74,6 +105,7 @@ function addMarkerOnMap(lat, lon) {
 
 let interval;
 onMount(() => {
+    polyline = L.polyline([], { color: 'red' }).addTo(map);
     interval = setInterval(fetchGPSData, 500);
     fetchGPSData();
 });
@@ -90,3 +122,35 @@ export const onopen = () => {
 export const onclose = () => {
     console.log('Plugin fermé');
 };
+</script>
+
+
+
+<style lang="less">
+    .gps-info {
+        margin-top: 20px;
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .error {
+        color: red;
+        margin-top: 20px;
+    }
+    .plugin-container {
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        white-space: pre-wrap; /* Permet d'afficher les retours à la ligne */
+        background: #f5f5f5;
+        height: 100%;
+        overflow-y: auto;
+    }
+</style>
+<div class="plugin-container">
+    <h3>GPS Data Stream</h3>
+    {#if error}
+        <div class="error">{error}</div>
+    {/if}
+    <pre>{gpsData}</pre>
+</div>
