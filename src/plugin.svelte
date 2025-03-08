@@ -62,18 +62,14 @@ async function fetchGPSData() {
             if (latitude && longitude) {
                 addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
             }
-        }
-        if (gpsData.startsWith('$HEHDT')) {
+        } else if (gpsData.startsWith('$HEHDT')) {  // Ajout de "else" pour éviter d'être en dehors du try
             const parts = gpsData.split(',');
-            const heading = parseFloat(parts[1]);
-} 
-
-
-catch (err) {
+            heading = parseFloat(parts[1]); // heading doit être défini globalement
+        }
+    } catch (err) {  // Le catch est bien lié au try
         error = `Erreur lors de la récupération des données : ${err.message || err}`;
         console.error('Erreur de récupération des données:', err);
     }
-}
 }
 
 function convertLatitude(latitudesal, latDirection) {
