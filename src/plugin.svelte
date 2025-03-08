@@ -9,7 +9,8 @@
     >
     { title }
     </div>
-<p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a></p>
+<p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a> for Ponant</p>
+
 <p> <center>🛳️</center></p>
 <p> 1. Download and unzip the <a href="https://drive.google.com/file/d/1WQprHSiy15N97M6U9ybNfuVbMuzLSsL2/view?usp=sharing">plugin file</a> (click on ‘plugin file')</p>
 <p> 2. Run server.exe and fill in the information from TCP</p>
