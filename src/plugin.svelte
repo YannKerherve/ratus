@@ -29,6 +29,7 @@
         </div>
     {/if}
 </section>
+<script src="https://rawgit.com/bbecquet/Leaflet.RotatedMarker/master/leaflet.rotatedMarker.js"></script>
 
 <script lang="ts">
 import bcast from "@windy/broadcast";
@@ -91,15 +92,14 @@ function addMarkerOnMap(lat, lon, heading) {
     if (map) {
         markerLayer.clearLayers(); 
 
-        const rotatedIcon = L.divIcon({
-            className: 'rotated-icon',
-            html: `<img src="https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png"
-                        style="width:25px; height:100px; transform: rotate(${heading}deg);">`,
+        const customIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
             iconSize: [25, 100],
             iconAnchor: [12, 50],
         });
 
-        L.marker([lat, lon], { icon: rotatedIcon }).addTo(markerLayer);
+        let marker = L.marker([lat, lon], { icon: customIcon, rotationAngle: heading }).addTo(markerLayer);
+        marker.setRotationAngle(heading); // Appliquer la rotation
 
         if (previousLat !== null && previousLon !== null) {
             polyline.addLatLng([lat, lon]); // Ajoute le nouveau point à la trace
