@@ -10,7 +10,7 @@
     { title }
     </div>
 <p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a> for Ponant</p>
-<img src="https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/ice.png" width=100/>
+<img src="https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/ice.png" width=100%/>
 <p> <center>🛳️</center></p>
 <p> 1. Download and unzip the <a href="https://drive.google.com/file/d/1WQprHSiy15N97M6U9ybNfuVbMuzLSsL2/view?usp=sharing">plugin file</a> (click on ‘plugin file')</p>
 <p> 2. Run server.exe and fill in the information from TCP</p>
@@ -87,29 +87,31 @@ function convertLongitude(longitudesal, lonDirection) {
     return lonDirection === 'W' ? -longitude : longitude;
 }
 
-function addMarkerOnMap(lat, lon,heading) {
+function addMarkerOnMap(lat, lon, heading) {
     if (map) {
         markerLayer.clearLayers(); 
-        const customIcon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
+
+        const rotatedIcon = L.divIcon({
+            className: 'rotated-icon',
+            html: `<img src="https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png"
+                        style="width:25px; height:100px; transform: rotate(${heading}deg);">`,
             iconSize: [25, 100],
             iconAnchor: [12, 50],
-            rotationAngle: heading, // Rotation initiale
-            rotationOrigin: [12, 50],
         });
-        
-        L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-        
+
+        L.marker([lat, lon], { icon: rotatedIcon }).addTo(markerLayer);
+
         if (previousLat !== null && previousLon !== null) {
             polyline.addLatLng([lat, lon]); // Ajoute le nouveau point à la trace
         }
-        
+
         previousLat = lat;
         previousLon = lon;
     } else {
         console.error("Carte Windy non disponible !");
     }
 }
+
 
 let interval;
 onMount(() => {
@@ -141,7 +143,9 @@ export const onclose = () => {
         padding: 10px;
         border-radius: 5px;
     }
-
+.rotated-icon {
+    transform-origin: center;
+}
     .error {
         color: red;
         margin-top: 20px;
