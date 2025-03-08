@@ -37,6 +37,7 @@ import { map } from "@windy/map";
 const title = 'TCP GPS position plugin';
 let latitude = null;
 let longitude = null;
+let heading = null;
 let markerLayer = L.layerGroup().addTo(map);
 let gpsData = 'Aucune donnée reçue pour le moment...';
 let error = '';
