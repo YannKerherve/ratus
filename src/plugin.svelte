@@ -10,7 +10,7 @@
     { title }
     </div>
 <p> A plugin by <a href="https://github.com/YannKerherve">Yann Kerhervé</a> for Ponant</p>
-
+<img src="https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/ice.png" width=100% height=100%/>
 <p> <center>🛳️</center></p>
 <p> 1. Download and unzip the <a href="https://drive.google.com/file/d/1WQprHSiy15N97M6U9ybNfuVbMuzLSsL2/view?usp=sharing">plugin file</a> (click on ‘plugin file')</p>
 <p> 2. Run server.exe and fill in the information from TCP</p>
@@ -62,7 +62,13 @@ async function fetchGPSData() {
                 addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
             }
         }
-    } catch (err) {
+        if (gpsData.startsWith('$HEHDT')) {
+            const parts = gpsData.split(',');
+            const heading = parseFloat(parts[1]);
+} 
+
+
+catch (err) {
         error = `Erreur lors de la récupération des données : ${err.message || err}`;
         console.error('Erreur de récupération des données:', err);
     }
@@ -82,13 +88,15 @@ function convertLongitude(longitudesal, lonDirection) {
     return lonDirection === 'W' ? -longitude : longitude;
 }
 
-function addMarkerOnMap(lat, lon) {
+function addMarkerOnMap(lat, lon,heading) {
     if (map) {
         markerLayer.clearLayers(); 
         const customIcon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lcc.png',
-            iconSize: [100, 100],
-            iconAnchor: [50, 100],
+            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
+            iconSize: [50, 100],
+            iconAnchor: [25, 50],
+            rotationAngle: heading, // Rotation initiale
+            rotationOrigin: [25, 50],
         });
         
         L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
