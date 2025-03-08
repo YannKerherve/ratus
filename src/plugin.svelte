@@ -89,17 +89,8 @@ function convertLongitude(longitudesal, lonDirection) {
 }
 
 function addMarkerOnMap(lat, lon, heading) {
-L.Marker.include({
-    setRotationAngle: function (angle) {
-        this.options.rotationAngle = angle;
-        if (this._icon) {
-            this._icon.style.transformOrigin = 'center';
-            this._icon.style.transform = `rotate(${angle}deg)`;
-        }
-    }
-});    
-if (map) {
-        markerLayer.clearLayers(); 
+    if (map) {
+        markerLayer.clearLayers();
 
         const customIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
@@ -108,10 +99,18 @@ if (map) {
         });
 
         let marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-        marker.setRotationAngle(heading); // Rotation appliquée ici
+
+        // Attends que l'icône soit ajoutée au DOM
+        marker.on('add', function () {
+            const icon = marker.getElement();
+            if (icon) {
+                icon.style.transformOrigin = "50% 50%";
+                icon.style.transform = `rotate(${heading}deg)`;
+            }
+        });
 
         if (previousLat !== null && previousLon !== null) {
-            polyline.addLatLng([lat, lon]); // Ajoute le nouveau point à la trace
+            polyline.addLatLng([lat, lon]);
         }
 
         previousLat = lat;
@@ -120,7 +119,6 @@ if (map) {
         console.error("Carte Windy non disponible !");
     }
 }
-
 
 
 let interval;
