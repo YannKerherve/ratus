@@ -21,6 +21,7 @@
            <p> {gpsData}</p>
            <p>  Latitude: {latitude}° </p>
            <p>  Longitude: {longitude}° </p>
+           <p>  Heading: {heading}° </p>
     {/if}
     {#if error}
         <div class="error">
