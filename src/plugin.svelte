@@ -45,6 +45,7 @@ let gpsData = 'Aucune donnée reçue pour le moment...';
 let error = '';
 let polyline;
 let previousLat = null, previousLon = null;
+let marker = null;
 
 async function fetchGPSData() {
     try {
