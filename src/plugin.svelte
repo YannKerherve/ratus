@@ -89,7 +89,16 @@ function convertLongitude(longitudesal, lonDirection) {
 }
 
 function addMarkerOnMap(lat, lon, heading) {
-    if (map) {
+L.Marker.include({
+    setRotationAngle: function (angle) {
+        this.options.rotationAngle = angle;
+        if (this._icon) {
+            this._icon.style.transformOrigin = 'center';
+            this._icon.style.transform = `rotate(${angle}deg)`;
+        }
+    }
+});    
+if (map) {
         markerLayer.clearLayers(); 
 
         const customIcon = L.icon({
@@ -98,8 +107,8 @@ function addMarkerOnMap(lat, lon, heading) {
             iconAnchor: [12, 50],
         });
 
-        let marker = L.marker([lat, lon], { icon: customIcon, rotationAngle: heading }).addTo(markerLayer);
-        marker.setRotationAngle(heading); // Appliquer la rotation
+        let marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
+        marker.setRotationAngle(heading); // Rotation appliquée ici
 
         if (previousLat !== null && previousLon !== null) {
             polyline.addLatLng([lat, lon]); // Ajoute le nouveau point à la trace
@@ -111,6 +120,7 @@ function addMarkerOnMap(lat, lon, heading) {
         console.error("Carte Windy non disponible !");
     }
 }
+
 
 
 let interval;
