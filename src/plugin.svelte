@@ -73,7 +73,8 @@ catch (err) {
         error = `Erreur lors de la récupération des données : ${err.message || err}`;
         console.error('Erreur de récupération des données:', err);
     }
-}}
+}
+}
 
 function convertLatitude(latitudesal, latDirection) {
     const degrees = Math.floor(latitudesal / 100);
