@@ -90,46 +90,47 @@ function convertLongitude(longitudesal, lonDirection) {
 }
 
 function addMarkerOnMap(lat, lon, heading) {
-    if (map) {
-        // Créer une icône personnalisée
-        const customIcon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
-            iconSize: [25, 100],  
-            iconAnchor: [12, 50], 
-        });
+    if (!map) {
+        console.error("Carte Windy non disponible !");
+        return;
+    }
 
-        // Vérifier si le marqueur existe déjà
-        if (!marker) {
-            marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
-        } else {
-            marker.setLatLng([lat, lon]);
-        }
+    // Créer une icône personnalisée
+    const customIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
+        iconSize: [25, 100],  
+        iconAnchor: [12, 50], 
+    });
 
-        // Sélectionner l'élément DOM du marqueur
+    // Vérifier si le marqueur existe déjà
+    if (!marker) {
+        marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
+    } else {
+        marker.setLatLng([lat, lon]);
+    }
+
+    // Attendre que Leaflet ait bien mis à jour le DOM
+    setTimeout(() => {
         const iconElement = marker.getElement();
         if (iconElement) {
-            // Récupérer la transformation actuelle (Leaflet la met à jour automatiquement)
-            let currentTransform = iconElement.style.transform;
+            // Extraire la partie translate3d (Leaflet met à jour cette valeur automatiquement)
+            let match = iconElement.style.transform.match(/translate3d\([^)]+\)/);
+            let translatePart = match ? match[0] : "translate3d(0px, 0px, 0px)";
 
-            // Extraire la partie translate3d (position) en ignorant toute rotation existante
-            let match = currentTransform.match(/translate3d\([^)]+\)/);
-            let translatePart = match ? match[0] : "translate3d(0px, 0px, 0px)"; 
-
-            // Appliquer la nouvelle transformation avec la rotation
+            // Appliquer la rotation tout en conservant la position
             iconElement.style.transform = `${translatePart} rotate(${heading}deg)`;
             iconElement.style.transformOrigin = "50% 50%"; 
         }
-        // Mise à jour de la trace
-        if (previousLat !== null && previousLon !== null) {
-            polyline.addLatLng([lat, lon]);
-        }
+    }, 50); // Petit délai pour s'assurer que Leaflet a mis à jour la position
 
-        // Mise à jour des positions précédentes
-        previousLat = lat;
-        previousLon = lon;
-    } else {
-        console.error("Carte Windy non disponible !");
+    // Mise à jour de la trace uniquement si on a déjà une position précédente
+    if (previousLat !== null && previousLon !== null) {
+        polyline.addLatLng([lat, lon]);
     }
+
+    // Stocker les nouvelles positions
+    previousLat = lat;
+    previousLon = lon;
 }
 
 
