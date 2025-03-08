@@ -29,7 +29,7 @@
         </div>
     {/if}
 </section>
-<script src="https://rawgit.com/bbecquet/Leaflet.RotatedMarker/master/leaflet.rotatedMarker.js"></script>
+
 
 <script lang="ts">
 import bcast from "@windy/broadcast";
