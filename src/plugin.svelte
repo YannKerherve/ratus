@@ -36,7 +36,7 @@ import bcast from "@windy/broadcast";
 import { onDestroy, onMount } from 'svelte';
 import { map } from "@windy/map";
 
-const title = 'TCP GPS position plugin';
+const title = 'TCP GPS Position Plugin';
 let latitude = null;
 let longitude = null;
 let heading = null;
@@ -54,89 +54,66 @@ async function fetchGPSData() {
         
         if (gpsData.startsWith('$GPGLL')) {
             const parts = gpsData.split(',');
-            const latitudesal = parseFloat(parts[1]);
-            const latDirection = parts[2];
-            const longitudesal = parseFloat(parts[3]);
-            const lonDirection = parts[4];
-            
-            latitude = convertLatitude(latitudesal, latDirection);
-            longitude = convertLongitude(longitudesal, lonDirection);
-            
-            if (latitude && longitude) {
-                addMarkerOnMap(parseFloat(latitude), parseFloat(longitude));
-            }
-        } else if (gpsData.startsWith('$HEHDT')) {  // Ajout de "else" pour éviter d'être en dehors du try
-            const parts = gpsData.split(',');
-            heading = parseFloat(parts[1]); // heading doit être défini globalement
+            latitude = convertLatitude(parseFloat(parts[1]), parts[2]);
+            longitude = convertLongitude(parseFloat(parts[3]), parts[4]);
+            if (latitude && longitude) addMarkerOnMap(latitude, longitude);
+        } else if (gpsData.startsWith('$HEHDT')) {
+            heading = parseFloat(gpsData.split(',')[1]);
         }
-    } catch (err) {  // Le catch est bien lié au try
+    } catch (err) {
         error = `Erreur lors de la récupération des données : ${err.message || err}`;
-        console.error('Erreur de récupération des données:', err);
+        console.error(error);
     }
 }
 
-function convertLatitude(latitudesal, latDirection) {
-    const degrees = Math.floor(latitudesal / 100);
-    const minutes = latitudesal - (degrees * 100);
-    let latitude = degrees + (minutes / 60);
-    return latDirection === 'S' ? -latitude : latitude;
+function convertLatitude(value, direction) {
+    const degrees = Math.floor(value / 100);
+    const minutes = value - (degrees * 100);
+    let lat = degrees + (minutes / 60);
+    return direction === 'S' ? -lat : lat;
 }
 
-function convertLongitude(longitudesal, lonDirection) {
-    const degrees = Math.floor(longitudesal / 100);
-    const minutes = longitudesal - (degrees * 100);
-    let longitude = degrees + (minutes / 60);
-    return lonDirection === 'W' ? -longitude : longitude;
+function convertLongitude(value, direction) {
+    const degrees = Math.floor(value / 100);
+    const minutes = value - (degrees * 100);
+    let lon = degrees + (minutes / 60);
+    return direction === 'W' ? -lon : lon;
 }
 
-function addMarkerOnMap(lat, lon, heading) {
+function addMarkerOnMap(lat, lon) {
     if (!map) {
         console.error("Carte Windy non disponible !");
         return;
     }
 
-    // Créer une icône personnalisée
     const customIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/YannKerherve/ratus/refs/heads/main/src/lccdetoure.png',
-        iconSize: [25, 100],  
-        iconAnchor: [12, 50], 
+        iconSize: [25, 100],
+        iconAnchor: [12, 50],
     });
 
-    // Vérifier si le marqueur existe déjà
     if (!marker) {
         marker = L.marker([lat, lon], { icon: customIcon }).addTo(markerLayer);
     } else {
         marker.setLatLng([lat, lon]);
     }
 
-    // Attendre que Leaflet ait bien mis à jour le DOM
     setTimeout(() => {
         const iconElement = marker.getElement();
         if (iconElement) {
-            // Extraire la partie translate3d (Leaflet met à jour cette valeur automatiquement)
             let match = iconElement.style.transform.match(/translate3d\([^)]+\)/);
             let translatePart = match ? match[0] : "translate3d(0px, 0px, 0px)";
-
-            // Appliquer la rotation tout en conservant la position
-            iconElement.style.transform = ${translatePart},' rotate(',${heading},'deg)`;
-            iconElement.style.transformOrigin = "50% 50%"; 
-            console.log("New transform:", `${translatePart} rotate(${heading}deg)`);
+            iconElement.style.transform = `${translatePart} rotate(${heading}deg)`;
+            iconElement.style.transformOrigin = "50% 50%";
         }
-    }, 50); // Petit délai pour s'assurer que Leaflet a mis à jour la position
+    }, 50);
 
-    // Mise à jour de la trace uniquement si on a déjà une position précédente
     if (previousLat !== null && previousLon !== null) {
         polyline.addLatLng([lat, lon]);
     }
-
-    // Stocker les nouvelles positions
     previousLat = lat;
     previousLon = lon;
 }
-
-
-
-
 
 let interval;
 onMount(() => {
@@ -158,6 +135,7 @@ export const onclose = () => {
     console.log('Plugin fermé');
 };
 </script>
+
 
 
 
